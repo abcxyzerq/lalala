@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cha co gi</title>
+    <style>
+        /* --- General Styling & Modern Font --- */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+        :root {
+            --ios-blue: #007aff;
+            --ios-pink: #ff2d55;
+            --background-color: #f2f2f7;
+            --card-background: #ffffff;
+            --text-color: #1c1c1e;
+            --secondary-text-color: #8a8a8e;
+            --input-background: #f2f2f7;
+            --border-color: #d1d1d6;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            /* --- Background for Vietnamese Women's Day --- */
+            background-color: #fff0f5; /* Fallback color */
+            background-image: 
+                radial-gradient(circle at center, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 70%),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 15 C40 30, 20 30, 15 50 C30 60, 30 80, 50 85 C70 80, 70 60, 85 50 C80 30, 60 30, 50 15 Z' fill='%23F472B6' opacity='0.1'/%3E%3C/svg%3E");
+            background-size: auto, 100px 100px;
+            /* --- End of Background --- */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* --- Main Confession Card (Modern iOS) --- */
+        .card {
+            background-color: var(--card-background);
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            padding: 35px;
+            width: 90%;
+            max-width: 380px;
+            text-align: center;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .code-icon {
+            font-size: 40px;
+            margin-bottom: 20px;
+        }
+
+        .confession-title {
+            color: var(--text-color);
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+        }
+        
+        .encoded-message {
+            background-color: var(--input-background);
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-family: 'Menlo', 'Courier New', Courier, monospace;
+            font-size: 16px;
+            color: var(--text-color);
+            margin: 0 0 10px 0;
+            word-wrap: break-word;
+        }
+
+        .hint {
+            font-size: 14px;
+            color: var(--secondary-text-color);
+            margin-bottom: 30px;
+        }
+        
+        .answer-input {
+            width: 100%;
+            padding: 16px;
+            font-size: 17px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background-color: #fff;
+            text-align: center;
+            color: var(--text-color);
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .answer-input::placeholder {
+            color: #c7c7cc;
+        }
+        
+        .answer-input:focus {
+            outline: none;
+            border-color: var(--ios-blue);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.3);
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 16px 20px;
+            font-size: 17px;
+            font-weight: 500;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+            background-color: var(--ios-blue);
+            color: #ffffff;
+        }
+
+        .submit-button:active {
+            transform: scale(0.98);
+            background-color: #0056b3;
+        }
+
+        /* --- Modal Alert View (Modern) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: rgba(249, 249, 249, 0.95);
+            border-radius: 14px;
+            padding: 20px;
+            width: 85%;
+            max-width: 280px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-title {
+            color: var(--text-color);
+            font-size: 17px;
+            font-weight: 700;
+            margin: 0 0 5px 0;
+        }
+
+        .modal-body {
+            color: var(--text-color);
+            font-size: 14px;
+            margin: 10px 0 20px 0;
+            line-height: 1.5;
+            min-height: 40px;
+        }
+        
+        .modal-button-container {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .modal-button {
+            flex-grow: 1;
+            border: none;
+            border-radius: 8px;
+            font-size: 17px;
+            font-weight: 500;
+            padding: 12px 5px;
+            cursor: pointer;
+            transition: background-color 0.2s, opacity 0.2s;
+        }
+        
+        .modal-button.primary {
+            background-color: var(--ios-pink);
+            color: #fff;
+        }
+        
+        .modal-button.secondary {
+            background-color: #e5e5ea;
+            color: var(--ios-blue);
+        }
+
+        .modal-button:hover {
+            opacity: 0.85;
+        }
+        
+        .poem-text {
+            text-align: left;
+            white-space: pre-wrap;
+            background-color: #fff0f5;
+            border: 1px dashed var(--ios-pink);
+            padding: 15px;
+            border-radius: 8px;
+            font-style: italic;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        /* --- Card Shake Animation --- */
+        @keyframes shake {
+            10%, 90% { transform: translateX(-1px); }
+            20%, 80% { transform: translateX(2px); }
+            30%, 50%, 70% { transform: translateX(-4px); }
+            40%, 60% { transform: translateX(4px); }
+        }
+
+        .card.shake {
+            animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        /* --- Responsiveness --- */
+        @media (max-width: 400px) {
+            .card {
+                padding: 25px;
+            }
+            .confession-title {
+                font-size: 20px;
+            }
+            .answer-input, .submit-button {
+                padding: 14px;
+                font-size: 16px;
+            }
+            .modal-content {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div class="code-icon">💌</div>
+        <p class="confession-title">Một thông điệp bí mật...</p>
+        <p class="encoded-message">Sht lt jbh a uol</p>
+        <p class="hint">Gợi ý: Caesar7, 1 từ t rất hay dùng!</p>
+        
+        <input type="text" class="answer-input" id="answer-input" placeholder="Nhập câu trả lời...">
+        <button class="submit-button" id="submit-button">Giải mã</button>
+    </div>
+
+    <!-- Modal for Success Message -->
+    <div class="modal-overlay" id="success-modal">
+        <div class="modal-content">
+            <h3 class="modal-title" id="modal-title"></h3>
+            <div class="modal-body" id="modal-body"></div>
+            <div class="modal-button-container" id="modal-button-container"></div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const submitButton = document.getElementById('submit-button');
+        const answerInput = document.getElementById('answer-input');
+        const successModal = document.getElementById('success-modal');
+        const card = document.querySelector('.card');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+        const modalButtonContainer = document.getElementById('modal-button-container');
+
+        // The correct answer (case-insensitive)
+        const correctAnswer = "oke";
+
+        function hideModal() {
+            successModal.classList.remove('show');
+        }
+
+        function showModal() {
+            // Reset modal to its initial success state
+            modalTitle.textContent = '😍';
+            modalBody.innerHTML = 'Vậy là đồng ý rồi ha. Đi đến phần cảm nhận nhé! &lt;3';
+            modalButtonContainer.innerHTML = `
+                <button class="modal-button secondary" id="close-modal-button">Hongg</button>
+                <button class="modal-button primary" id="generate-poem-button">✨ Ummm! </button>
+            `;
+
+            // Re-attach event listeners for the modal buttons
+            document.getElementById('generate-poem-button').addEventListener('click', showSpecialGift);
+            document.getElementById('close-modal-button').addEventListener('click', hideModal);
+            
+            successModal.classList.add('show');
+        }
+
+        // Function to show a special plain text message
+        function showSpecialGift() {
+            // 1. Prepare the special message
+            const specialMessage = `Thật ra ban đầu t chẳng định yêu ai đâu. Nhưng m cứ xuất hiện suốt (chắc không phải do vô tình đâu nhỉ), cứ trêu, cứ hỏi “mày ghét tao đúng không?”, “mày không muốn đi chơi với tao nữa hả?” (khong thich ti nao, kho doi pho v). Quen giọng nói, quen cách m trêu t (?mới gần 1 tháng mà nhỉ) quen việc ngày nào cũng có người rủ chơi PUBG hay nhắn tin linh tinh.
+
+Giờ m không nói linh tinh chắc cũng thấy thiếu nhỉ (?)
+
+ờ thì… cảm ơn mày vì đã thích t trước, vì đã để t có cơ hội biết cảm giác thích lại một người là thế nào.  (flushed)
+T không hứa gì to tát đâu (tại t khá phế =))), nhưng mà t sẽ cố gắng cho m thấy m không chọn sai người!
+
+À … chúc m 20/10 vui vẻ nhé 💐  
+`;
+
+            // 2. Display the message in the modal
+            modalTitle.textContent = 'Cha biet viet title gi';
+            modalBody.innerHTML = `<div class="poem-text">${specialMessage.replace(/\n/g, '<br>')}</div>`;
+            modalButtonContainer.innerHTML = `<button class="modal-button primary" id="final-close-button">Tuyệt vời!</button>`;
+            
+            // 3. Add listener to the new close button
+            document.getElementById('final-close-button').addEventListener('click', hideModal);
+        }
+
+        function checkAnswer() {
+            const userAnswer = answerInput.value.trim().toLowerCase();
+
+            if (userAnswer === correctAnswer) {
+                showModal();
+            } else {
+                // Shake the card if the answer is wrong
+                card.classList.add('shake');
+                // Remove animation class to allow it to run again
+                setTimeout(() => {
+                    card.classList.remove('shake');
+                }, 820); // Duration matches the animation
+                answerInput.value = "";
+                answerInput.focus();
+            }
+        }
+
+        // --- Main Event Listeners ---
+        submitButton.addEventListener('click', checkAnswer);
+        
+        answerInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+
+        successModal.addEventListener('click', function(event) {
+            if (event.target === successModal) {
+                hideModal();
+            }
+        });
+    </script>
+</body>
+</html>
+
